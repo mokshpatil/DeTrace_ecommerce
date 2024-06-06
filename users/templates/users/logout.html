@@ -1,0 +1,10 @@
+{% extends 'store/main.html' %}
+{% block content %}
+    
+<h2> Logged out</h2>
+    <div class="border-top pt-3">
+        <small class="text-muted">
+            You've been logged out <a class="ml-2" href="{% url "login" %}">Log In again</a>
+        </small>
+    </div>
+{% endblock content %}

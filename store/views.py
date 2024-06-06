@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import Vendor
 
 def store(request):
     context={}
