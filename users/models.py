@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 class Vendor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=200, null=True)
-    email = models.CharField(max_length=200, null=True)
 
     def __str__(self):
         return self.user.username
@@ -15,7 +14,6 @@ class Vendor(models.Model):
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=200, null=True)
-    email = models.CharField(max_length=200, null=True)
     wallet_balance = models.IntegerField(default=0)
     def __str__(self):
         return self.user.username
