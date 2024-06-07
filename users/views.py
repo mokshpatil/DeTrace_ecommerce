@@ -26,8 +26,13 @@ def user_logout(request):
 def myaccount(request):
     if request.method == "POST":
       customer_update = CustomerUpdateForm(request.POST, instance=request.user.customer)
-    if customer_update.is_valid():
-        customer_update.save()
+      if customer_update.is_valid():
+          customer_update.save()
+          messages.success(request, f"Success! {'username'}, your account has been updated!")
+          return redirect('myaccount')
+        
+        
+    
     else:
         customer_update = CustomerUpdateForm(instance=request.user.customer)
 
