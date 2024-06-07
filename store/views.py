@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Vendor
+from django.contrib.auth.decorators import login_required
 
 def store(request):
     context={}
