@@ -10,6 +10,7 @@ def register(request):
     if request.method == "POST":
         form = userRegistrationForm(request.POST)
         if form.is_valid():
+            is_vendor = form.cleaned_data.get('is_vendor')
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f"Success! {'username'}, you have created the account!")
@@ -30,9 +31,6 @@ def myaccount(request):
           customer_update.save()
           messages.success(request, f"Success! {'username'}, your account has been updated!")
           return redirect('myaccount')
-        
-        
-    
     else:
         customer_update = CustomerUpdateForm(instance=request.user.customer)
 
