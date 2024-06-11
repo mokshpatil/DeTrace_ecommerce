@@ -34,7 +34,7 @@ class Cart(models.Model):
     customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     is_paid = models.BooleanField(default=False)
 
-    def cart_value(self):
+    def total_value(self):
         total_value = sum(i.product.price*i.quantity for i in self.orderitems_set.all())
         return total_value
 
