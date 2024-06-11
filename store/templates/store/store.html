@@ -1,44 +1,23 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-<div class="row">
-	<div class="col-lg-4">
-        <img class="thumbnail" src="{% static 'images/placeholder.png' %}">
-		<div class="box-element product">
-            <h6><strong>Product1</strong></h6>
-		    <hr>
-            <button  class="btn btn-outline-secondary add-btn">Add to Cart</button>
-		    <a class="btn btn-outline-success" href="#">View</a>
-		    <h4 style="display: inline-block; float: right"><strong>$20</strong></h4>
-
-
+	{% for product in product %}
+	<article class="media content-section">
+	<div class="media-body">
+		<div class="article-metadata">
+		<a class="mr-2" href="#">{{ product.seller }}</a>
+		<a class="mr-2" href="#">{{ product.id }}</a>
 		</div>
+		<h2><a class="article-title" href="{% url 'product_detail' product.id %}">{{ product.title }}</a></h2>
+		<p class="article-content">${{ product.price }}</p>
+		<p class="article-content">stock {{ product.quantity }}</p>
+		<img class="article-img" src="{{ product.image.url }}" alt="{{ product.title }}">
+		<p class="article-content">Description:
+		{{ product.description }}</p>
+		<a class="nav-item nav-link" href="{% url 'add_to_cart' product.id%}">Add to cart</a>
+		<a class="nav-item nav-link" href="#">View More</a>
 	</div>
-
-	<div class="col-lg-4">
-		<img class="thumbnail" src="{% static 'images/placeholder.png' %}">
-		<div class="box-element product">
-            <h6><strong>Product2</strong></h6>
-		    <hr>
-            <button  class="btn btn-outline-secondary add-btn">Add to Cart</button>
-		    <a class="btn btn-outline-success" href="#">View</a>
-		    <h4 style="display: inline-block; float: right"><strong>$15</strong></h4>
-
-
-		</div>
-	</div>
-
-	<div class="col-lg-4">
-		<img class="thumbnail" src="{% static 'images/placeholder.png' %}">
-		<div class="box-element product">
-            <h6><strong>Product3</strong></h6>
-		    <hr>
-            <button  class="btn btn-outline-secondary add-btn">Add to Cart</button>
-		    <a class="btn btn-outline-success" href="#">View</a>
-		    <h4 style="display: inline-block; float: right"><strong>$10</strong></h4>
-
-
-		</div>
-	</div>
-</div>
+	</article>
+	{% endfor %}
+	
 {% endblock content %}

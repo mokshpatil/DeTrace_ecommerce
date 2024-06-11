@@ -14,4 +14,4 @@ class userRegistrationForm(UserCreationForm):
 class CustomerUpdateForm(forms.ModelForm):
     class Meta:
         model = Customer
-        fields = ['name', 'wallet_balance']
+        fields = ['wallet_balance']

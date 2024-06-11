@@ -3,15 +3,13 @@
     <div class="content-section">
         <h2 class="heading">{{ user.username }}</h2>
         <p class="email-text">e-mail : {{ user.email }}</p>
-        <p class="name-text">Name : {{ user.name }}</p>
-        <p class="name-text">Wallet Balance : {{ user.wallet_balance }}</p>
         <br>
         <br>
         
         <form method="POST">
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Update Info / Add Money</legend>
+                <legend class="border-bottom mb-4">Add Money</legend>
                 {{ customer_update.as_p }}
             </fieldset>
             <div class="form-groups">
