@@ -1,0 +1,14 @@
+{% extends 'store/main.html' %}
+{% block content %}
+    <dic class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">List a Product</legend>
+                {{ form.as_p }}
+            </fieldset>
+            <div class="form-groups">
+                <button class="btn btn-outline-info" type="submit">Submit</button>
+            </div>
+        </form>
+{% endblock content %}

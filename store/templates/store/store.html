@@ -1,7 +1,7 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-	{% for product in product %}
+	{% for product in products %}
 	<article class="media content-section">
 	<div class="media-body">
 		<div class="article-metadata">
@@ -10,7 +10,7 @@
 		</div>
 		<h2><a class="article-title" href="{% url 'product_detail' product.id %}">{{ product.title }}</a></h2>
 		<p class="article-content">${{ product.price }}</p>
-		<p class="article-content">stock {{ product.quantity }}</p>
+		<p class="article-content">available quantity = {{ product.quantity }}</p>
 		<img class="article-img" src="{{ product.image.url }}" alt="{{ product.title }}">
 		<p class="article-content">Description:
 		{{ product.description }}</p>

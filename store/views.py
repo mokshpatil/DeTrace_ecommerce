@@ -1,13 +1,16 @@
 from django.forms import BaseModelForm
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView, DeleteView, CreateView
-from .models import Product
+from django.views.generic import ListView, DetailView, CreateView
+from .models import Product, Cart, OrderItems, Order
+from users.models import CustomUser, Customer, Vendor
 
 
 def store(request):
-    context={}
+    context={
+        'products' : Product.objects.all()
+    }
     return render(request, 'store/store.html', context)
 
 def cart(request):
@@ -24,11 +27,11 @@ def user(request):
 
 class ProductListView(ListView):
     model = Product
-    template_name = 'store/store.html'
+    template_name = 'store/store.html'  
     context_object_name = 'products'
-    #ordering = ['-orders']
+    ordering = ['-price']
 
-class ProductDetailView(DeleteView):
+class ProductDetailView(DetailView):
     model = Product
 
 class ProductCreateView(CreateView):
@@ -38,3 +41,74 @@ class ProductCreateView(CreateView):
     def form_valid(self, form):
         form.instance.seller = self.request.user
         return super().form_valid(form)
+    
+@login_required
+def add_to_cart(request, id):
+    product = Product.objects.get(id=id)
+   # customer = request.user
+    cart, created = Cart.objects.get_or_create(customer = request.user, is_paid = False)
+
+    cart_item, created = OrderItems.objects.get_or_create(cart=cart, product=product)
+    if created:
+        cart_item.quantity = 1
+        cart_item.save()
+        print(f"Added {product} to cart {cart}")
+    else:
+        cart_item.quantity += 1
+        cart_item.save()
+        print(f"Updated {product} quantity in cart {cart}")
+    return HttpResponseRedirect('/')
+
+@login_required
+def cart(request):
+    #customer = request.user
+    if request.user.is_vendor == False:
+        cart, created = Cart.objects.get_or_create(customer = request.user, is_paid=False)
+        cart_items = cart.orderitems_set.all()
+        products = [i.product for i in cart_items]
+
+        context = {
+            'cart': cart,
+            'cart_items': cart_items,
+            'products': products
+        }
+
+        return render(request, 'store/cart.html', context)
+
+
+@login_required
+def placeorder(request):
+    if request.method == 'POST':
+        customer = request.user
+        cart = Cart.objects.filter(is_paid=False, user=customer).first()
+        profile = Customer.objects.filter(user=customer).first()
+        cart_items = cart.orderitems_set.all()
+        quantityenough = True
+
+        for products in cart_items:
+            if products.product.quantity < products.quantity:
+                quantityenough = False
+
+        if cart:
+            if quantityenough :
+                if profile.wallet_balance > cart.total_price():
+                    cart.is_paid = True
+                    cart.save()
+                    profile.wallet_balance = profile.wallet_balance - cart.total_value()
+                    profile.save()
+
+                    for products in cart_items:
+                        products.product.quantity -= products.quantity
+                        products.product.orders += products.quantity
+                        products.product.save()
+
+                    return render(request, 'store/orderplaced.html')
+                else:
+                    return HttpResponse("not enough money")
+            else:
+                cart.delete()
+                return HttpResponse("Sorry, please order in available quantity")
+        else:
+            return redirect('cart')
+
+    return redirect('cart')
