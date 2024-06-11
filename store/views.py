@@ -96,7 +96,7 @@ def placeorder(request):
                     cart.is_paid = True
                     cart.save()
                     profile.wallet_balance = profile.wallet_balance - cart.total_value()
-                    customer.save()
+                    profile.save()
 
                     for products in cart_items:
                         products.product.quantity -= products.quantity
