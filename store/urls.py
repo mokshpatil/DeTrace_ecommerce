@@ -14,7 +14,7 @@ urlpatterns = [
     path('add-to-cart/<int:id>/', add_to_cart, name="add_to_cart"),
     path('orderplaced/', placeorder, name="orderplaced"),
     path('orderhistory/', views.orderhistory, name='orderhistory'),
-    path('/sellerdashboard', views.sellerdashboard, name='seller_dashboard'),
+    path('sellerdashboard/', views.sellerdashboard, name='seller_dashboard'),
 ]
 
 if settings.DEBUG:
