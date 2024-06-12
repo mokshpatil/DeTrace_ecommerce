@@ -31,8 +31,11 @@ def myaccount(request):
     if request.method == "POST":
         customer_update = CustomerUpdateForm(request.POST, instance=customer)
         if customer_update.is_valid():
+            if customer.add_money < 0:
+                messages.error(request, f"amount added should be greater than 0")
+            customer.wallet_balance += customer.add_money
             customer_update.save()
-            messages.success(request, f"Success! {request.user.username}, your account has been updated!")
+            messages.success(request, f"Success! {request.user.username}, ${customer.add_money} has been added to your wallet. Your balance is now ${customer.wallet_balance}.")
             return redirect('myaccount')
     else:
         customer_update = CustomerUpdateForm(instance=customer)

@@ -37,6 +37,7 @@ class ProductDetailView(DetailView):
 class ProductCreateView(CreateView):
     model = Product
     fields = ['title', 'image', 'description', 'price', 'quantity']
+    
 
     def form_valid(self, form):
         form.instance.seller = self.request.user
@@ -103,7 +104,7 @@ def placeorder(request):
                         products.product.orders += products.quantity
                         products.product.save()
 
-                    return HttpResponse("order has been placed")
+                    return render(request, 'store/orderplaced.html')
                 else:
                     return HttpResponse("not enough money")
             else:
@@ -117,7 +118,12 @@ def placeorder(request):
 @login_required
 def orderhistory(request):
     customer = request.user
-    orders = Cart.objects.filter(is_paid=True, user=customer).order_by('-id')
+    orders = Cart.objects.filter(is_paid=True, customer=customer).order_by('-id')
 
     return render(request, 'store/orderhistory.html', {'orders' : orders})
+
+@login_required
+def sellerdashboard(request):
+    products= Product.objects.filter(seller=request.user)
+    return render(request, 'store/sellerdashboard.html', {'products': products})
 

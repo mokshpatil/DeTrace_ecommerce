@@ -32,10 +32,12 @@
                        <a href="{% url "logout" %}"class="btn btn-warning">Logout</a>
                       {% if user.is_vendor == False %}
                         <a href="{% url "myaccount" %}"class="btn btn-warning">My Account</a>
+                        <a href="{% url "orderhistory" %}"class="btn btn-warning">Order History</a>
                       {% endif %}
                        
                       {% if user.is_vendor %}
                         <a href="{% url "product_create" %}"class="btn btn-warning">List</a>
+                        <a href="{% url "seller_dashboard" %}"class="btn btn-warning">Seller Dashboard</a>
                       {% endif %}
                       {% else %}
                       <a href="{% url "login" %}"class="btn btn-warning">Login</a>

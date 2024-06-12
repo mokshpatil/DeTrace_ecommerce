@@ -8,7 +8,7 @@
         <article class="media content-section">
         <div class="media-body">
             <div class="article-metadata">
-            <a class="mr-2" href="#">{{ product.product.author }}</a>
+            <a class="mr-2" href="#">{{ product.product.seller }}</a>
             </div>
             <h2><a class="article-title" href="{% url 'product_detail' product.product.id %}">{{ product.product.title }}</a></h2>
             <p class="article-content">price of 1 unit ${{ product.product.price }}</p>

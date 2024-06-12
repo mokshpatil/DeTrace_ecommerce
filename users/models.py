@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractBaseUser, PermissionsMixin, BaseUserManager
-#from django.contrib.auth.base_user import BaseUserManager
 #from django.utils.translation import ugettext_lazy as _
 
 # Create your models here.
@@ -81,6 +80,7 @@ class Customer(models.Model):
     name = models.CharField(max_length=200, null=True)
     wallet_balance = models.IntegerField(default=0)
     is_vendor = models.BooleanField(default=False)
+    add_money = models.IntegerField(default=0)
     def __str__(self):
         return self.user.username
     

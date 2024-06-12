@@ -1,0 +1,21 @@
+{% extends "store/main.html" %}
+{% block content %}
+    {% for product in products %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ product.seller }}</a>
+              <a class="mr-2" href="#">{{ product.id }}</a>
+            </div>
+            <h2><a class="article-title" href="{% url 'product_detail' product.id %}">{{ product.title }}</a></h2>
+            <p class="article-content">${{ product.price }}</p>
+            <p class="article-content">stock {{ product.quantity }}</p>
+            <p class="article-content">orders {{ product.orders }}</p>
+            <img class="article-img" src="{{ product.image.url }}" alt="{{ product.title }}">
+            <p class="article-content">Description:
+               {{ product.description }}</p>
+          </div>
+        </article>
+    {% endfor %}
+   
+{% endblock content %}

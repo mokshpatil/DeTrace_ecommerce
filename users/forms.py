@@ -12,6 +12,9 @@ class userRegistrationForm(UserCreationForm):
         fields = ['username', 'email', 'password1', 'password2', 'is_vendor']
 
 class CustomerUpdateForm(forms.ModelForm):
+
+    #add_money = forms.IntegerField(required=False)
+
     class Meta:
         model = Customer
-        fields = ['wallet_balance']
+        fields = ['add_money']

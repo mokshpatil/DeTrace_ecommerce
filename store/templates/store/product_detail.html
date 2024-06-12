@@ -1,7 +1,6 @@
 {% extends "store/main.html" %}
 {% block content %}
   <article class="media content-section">
-    <img class="rounded-circle article-img" src="{{ object.seller.profile.image.url }}">
     <div class="media-body">
       <div class="article-metadata">
         <a class="mr-2" href="#">{{ object.seller }}</a>
@@ -14,6 +13,8 @@
       </div>
       <h2 class="article-title">{{ object.title }}</h2>
       <p class="article-content">{{ object.price }}</p>
+      <img class="article-img" src="{{ product.image.url }}" alt="{{ product.title }}">
+      <a class="nav-item nav-link" href="{% url 'add_to_cart' product.id%}">Add to cart</a>
       {% if img_obj %}  
         <h3>Succesfully uploaded : {{img_obj.caption}}</h3>  
         <img src="{{ img_obj.image.url }}" alt="connect" style="max-height:300px">  
