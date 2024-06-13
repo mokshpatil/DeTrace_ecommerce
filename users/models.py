@@ -76,7 +76,7 @@ class Vendor(models.Model):
 
 
 class Customer(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=200, null=True)
     wallet_balance = models.IntegerField(default=0)
     is_vendor = models.BooleanField(default=False)

@@ -118,7 +118,7 @@ def placeorder(request):
 @login_required
 def orderhistory(request):
     customer = request.user
-    orders = Cart.objects.filter(is_paid=True, customer=customer).order_by('-id')
+    orders = Cart.objects.filter(is_paid=True, customer=customer).order_by('id')
 
     return render(request, 'store/orderhistory.html', {'orders' : orders})
 
