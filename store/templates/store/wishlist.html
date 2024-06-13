@@ -1,0 +1,23 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<h2>WISHLIST</h2>
+<br>
+<h3><a class="article-title" href="{% url "clearwishlist" %}">Clear Wishlist</a></h3>
+<br>
+{% for product in wishlist_items %}
+        <article class="media content-section">
+        <div class="media-body">
+            <div class="article-metadata">
+            <a class="mr-2" href="#">{{ product.product.seller }}</a>
+            <a class="mr-2" href="#">{{ product.product.id }}</a>
+            </div>
+            <h4><a class="article-title" href="{% url 'product_detail' product.product.id %}">{{ product.product.title }}</a></h4>
+            <p class="article-content">price = ${{ product.product.price }}</p>
+            <img class="article-img" src="{{ product.product.image.url }}" alt="{{ product.product.title }}">
+            <a class="nav-item nav-link" href="{% url 'add_to_cart' product.id%}">Add to Cart</a>
+        </div>
+        </article>
+    {% endfor %}
+    
+{% endblock content %}

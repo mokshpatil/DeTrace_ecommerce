@@ -45,3 +45,11 @@ class OrderItems(models.Model):
     quantity = models.IntegerField(default=0, null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, blank=True, null=True)
 
+class Wishlist(models.Model):
+    customer = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+
+class WishlistItems(models.Model):
+    wl = models.ForeignKey(Wishlist, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, blank=True, null=True)
+
+

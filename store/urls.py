@@ -17,6 +17,10 @@ urlpatterns = [
     path('sellerdashboard/', views.sellerdashboard, name='seller_dashboard'),
     path('getreport',views.getreport,name='getreport'),
     path('vendorupdate/', vendorupdate, name='vendorupdate'),
+    path('add-to-wishlist/<int:id>', views.add_to_wishlist, name='add_to_wishlist'),
+    path('wishlist/', views.wishlist, name='wishlist'),
+    path('clearwishlist/', views.clearwishlist, name='clearwishlist'),
+    path('clearcart/', views.clearcart, name='clearcart'),
 ]
 
 if settings.DEBUG:

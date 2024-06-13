@@ -13,5 +13,3 @@ admin.site.register(Cart)
 
 
 # Register your models here.
-
-#admin pass is passdjango

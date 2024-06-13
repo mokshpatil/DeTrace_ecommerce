@@ -3,12 +3,20 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView
-from .models import Product, Cart, OrderItems, Order
+from .models import Product, Cart, OrderItems, Order, WishlistItems, Wishlist
 from users.models import CustomUser, Customer, Vendor
 import csv
 from .forms import VendorUpdateForm
 from django.contrib import messages
+from mailjet_rest import Client
+import os
+from dotenv import load_dotenv
+load_dotenv(override=True)
 
+
+API_KEY = os.environ['MJ_APIKEY_PUBLIC']
+API_SECRET = os.environ['MJ_APIKEY_PRIVATE']
+mailjet = Client(auth=(API_KEY, API_SECRET), version='v3.1')
 
 def store(request):
     context={
@@ -64,6 +72,19 @@ def add_to_cart(request, id):
     return HttpResponseRedirect('/')
 
 @login_required
+def add_to_wishlist(request, id):
+    product = Product.objects.get(id=id)
+    wl, created = Wishlist.objects.get_or_create(customer = request.user)
+    wishlist_items, created = WishlistItems.objects.get_or_create(wl = wl, product=product)
+    if created:
+        wishlist_items.save()
+        messages.success(request, f"{product.title} has been added to your wishlist")
+    else:
+        messages.error(request, f"{product.title} already exists in your wishlist")
+    return HttpResponseRedirect('/')
+
+
+@login_required
 def cart(request):
     #customer = request.user
     cart, created = Cart.objects.get_or_create(customer = request.user, is_paid=False)
@@ -78,6 +99,31 @@ def cart(request):
 
     return render(request, 'store/cart.html', context)
 
+@login_required
+def wishlist(request):
+    wl, created = Wishlist.objects.get_or_create(customer = request.user)
+    wishlist_items = wl.wishlistitems_set.all()
+    products = [i.product for i in wishlist_items]
+
+    context = {
+        'wishlist': wl,
+        'wishlist_items' : wishlist_items,
+        'products' : products
+    }
+    return render(request, 'store/wishlist.html', context)
+
+@login_required
+def clearwishlist(request):
+    wl = Wishlist.objects.filter(customer = request.user).first()
+    wl.delete()
+    return redirect('store')
+
+@login_required
+def clearcart(request):
+    cart = Cart.objects.filter(is_paid=False, customer = request.user).first()
+    cart.delete()
+    return redirect('store')
+    
 
 @login_required
 def placeorder(request):
@@ -101,8 +147,31 @@ def placeorder(request):
                     cart.save()
                     profile.wallet_balance = profile.wallet_balance - cart.total_value()
                     profile.save()
-
+                    cart_sellers = []
                     for products in cart_items:
+                        if not (products.product.seller in cart_sellers):
+                            cart_sellers.append(products.product.seller)
+                            data = {'Messages': [
+                            {
+                            "From": {
+                                "Email": "mailfortrivialstuff@gmail.com",
+                                "Name": "Moksh"
+                            },
+                            "To": [
+                                {
+                                "Email": "{products.product.seller.email}",
+                                "Name": "{products.product.seller.username}"
+                                }
+                            ],
+                            "Subject": "Update from DeTrace e-commerce!",
+                            "TextPart": "Greetings {products.product.seller.username}. An order has been placed for {products.product} of {products.product.quantity} units.!",
+                            "HTMLPart": ""
+                            }
+                        ]
+                        }
+                            result = mailjet.send.create(data=data)
+                            print(result.status_code)
+                            print(result.json())
                         products.product.quantity -= products.quantity
                         products.product.orders += products.quantity
                         products.product.save()
@@ -150,6 +219,37 @@ def vendorupdate(request):
         if vendor_update.is_valid():
             vendor_update.save()
             messages.success(request, f"Your e-mail has been successfully changed to {vendor.email}")
-            return render(request, 'vendorupdate', {'vendor_update':vendor_update})
+    else:
+     vendor_update = VendorUpdateForm()
+    return render(request, 'store/vendorupdate.html', {'vendor_update':vendor_update})
 
 
+"""
+API_KEY = os.environ['57697d9bf19f182471b769b2ec961ae5']
+API_SECRET = os.environ['9b214fd9567baccfc07f6a9cd1329344']
+mailjet = Client(auth=(API_KEY, API_SECRET), version='v3.1')
+def send_mail(request):
+    vendor = request.user
+    data = {
+  'Messages': [
+    {
+      "From": {
+        "Email": "mailfortrivialstuff@gmail.com",
+        "Name": "Moksh"
+      },
+      "To": [
+        {
+          "Email": "{vendor.email}",
+          "Name": "{vendor.name}"
+        }
+      ],
+      "Subject": "Update from DeTrace e-commerce!",
+      "TextPart": "Greetings {vendor.name}. An order has been placed for you listing.!",
+      "HTMLPart": ""
+    }
+  ]
+}
+    result = mailjet.send.create(data=data)
+    print(result.status_code)
+    print(result.json())
+"""

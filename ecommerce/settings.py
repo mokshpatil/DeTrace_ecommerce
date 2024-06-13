@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -150,3 +153,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'store'
 LOGIN_URL = 'login'
+
+EMAIL_BACKEND = 'django_mailjet.backends.smtp.EmailBackend'
+MAILJET_API_KEY='57697d9bf19f182471b769b2ec961ae5'
+MAILJET_API_SECRET='9b214fd9567baccfc07f6a9cd1329344'
+
