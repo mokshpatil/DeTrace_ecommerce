@@ -1,5 +1,10 @@
 {% extends "store/main.html" %}
 {% block content %}
+    <a class="nav-link" href="{% url "vendorupdate" %}">Update E-mail</a>
+    <br>
+    <a class="nav-link" href="{% url "getreport" %}">Download Report</a>
+    <br>
+    <br>
     {% for product in products %}
         <article class="media content-section">
           <div class="media-body">
@@ -9,8 +14,8 @@
             </div>
             <h2><a class="article-title" href="{% url 'product_detail' product.id %}">{{ product.title }}</a></h2>
             <p class="article-content">${{ product.price }}</p>
-            <p class="article-content">stock {{ product.quantity }}</p>
-            <p class="article-content">orders {{ product.orders }}</p>
+            <p class="article-content">in stock = {{ product.quantity }}</p>
+            <p class="article-content">orders = {{ product.orders }}</p>
             <img class="article-img" src="{{ product.image.url }}" alt="{{ product.title }}">
             <p class="article-content">Description:
                {{ product.description }}</p>

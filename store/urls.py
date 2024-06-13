@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import ProductDetailView, ProductCreateView, ProductListView, add_to_cart, placeorder
+from .views import ProductDetailView, ProductCreateView, ProductListView, add_to_cart, placeorder, vendorupdate
 
 urlpatterns = [
     path('', ProductListView.as_view(), name='store'),
@@ -15,6 +15,8 @@ urlpatterns = [
     path('orderplaced/', placeorder, name="orderplaced"),
     path('orderhistory/', views.orderhistory, name='orderhistory'),
     path('sellerdashboard/', views.sellerdashboard, name='seller_dashboard'),
+    path('getreport',views.getreport,name='getreport'),
+    path('vendorupdate/', vendorupdate, name='vendorupdate'),
 ]
 
 if settings.DEBUG:

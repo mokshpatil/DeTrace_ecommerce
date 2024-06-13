@@ -5,6 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView
 from .models import Product, Cart, OrderItems, Order
 from users.models import CustomUser, Customer, Vendor
+import csv
+from .forms import VendorUpdateForm
+from django.contrib import messages
 
 
 def store(request):
@@ -126,4 +129,27 @@ def orderhistory(request):
 def sellerdashboard(request):
     products= Product.objects.filter(seller=request.user)
     return render(request, 'store/sellerdashboard.html', {'products': products})
+
+@login_required
+def getreport(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=vendor_report.csv'
+    writer = csv.writer(response)
+    products = Product.objects.filter(seller = request.user)
+    writer.writerow(['Title', 'Price', 'Orders', 'Available'])
+    for i in products:
+        writer.writerow([i.title, i.price, i.orders, i.quantity])
+    return response
+
+@login_required
+def vendorupdate(request):
+    vendor = CustomUser.objects.filter(username=request.user.username).first()
+    #vendor = Vendor.objects.filter(user=customuser).first()
+    if request.method == "POST":
+        vendor_update = VendorUpdateForm(request.POST, instance=vendor)
+        if vendor_update.is_valid():
+            vendor_update.save()
+            messages.success(request, f"Your e-mail has been successfully changed to {vendor.email}")
+            return render(request, 'vendorupdate', {'vendor_update':vendor_update})
+
 
