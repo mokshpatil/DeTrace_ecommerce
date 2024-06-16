@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView
-from .models import Product, Cart, OrderItems, Order, WishlistItems, Wishlist
+from .models import Product, Cart, OrderItems, Order, WishlistItems, Wishlist, Review
 from users.models import CustomUser, Customer, Vendor
 import csv
 from .forms import VendorUpdateForm
@@ -14,8 +14,8 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 
-API_KEY = os.environ['MJ_APIKEY_PUBLIC']
-API_SECRET = os.environ['MJ_APIKEY_PRIVATE']
+API_KEY = '57697d9bf19f182471b769b2ec961ae5'
+API_SECRET = '9b214fd9567baccfc07f6a9cd1329344'
 mailjet = Client(auth=(API_KEY, API_SECRET), version='v3.1')
 
 def store(request):
@@ -56,6 +56,9 @@ class ProductCreateView(CreateView):
     
 @login_required
 def add_to_cart(request, id):
+    if request.user.is_vendor:
+        messages.error(request, f"Cart cannot be accessed from a vendor account")
+        return redirect('store')
     product = Product.objects.get(id=id)
    # customer = request.user
     cart, created = Cart.objects.get_or_create(customer = request.user, is_paid = False)
@@ -73,6 +76,9 @@ def add_to_cart(request, id):
 
 @login_required
 def add_to_wishlist(request, id):
+    if request.user.is_vendor:
+        messages.error(request, f"Cart cannot be accessed from a vendor account")
+        return redirect('store')
     product = Product.objects.get(id=id)
     wl, created = Wishlist.objects.get_or_create(customer = request.user)
     wishlist_items, created = WishlistItems.objects.get_or_create(wl = wl, product=product)
@@ -86,6 +92,9 @@ def add_to_wishlist(request, id):
 
 @login_required
 def cart(request):
+    if request.user.is_vendor:
+        messages.error(request, f"Cart cannot be accessed from a vendor account")
+        return redirect('store')
     #customer = request.user
     cart, created = Cart.objects.get_or_create(customer = request.user, is_paid=False)
     cart_items = cart.orderitems_set.all()
@@ -101,6 +110,9 @@ def cart(request):
 
 @login_required
 def wishlist(request):
+    if request.user.is_vendor:
+        messages.error(request, f"Wishlist cannot be accessed from a vendor account")
+        return redirect('store')
     wl, created = Wishlist.objects.get_or_create(customer = request.user)
     wishlist_items = wl.wishlistitems_set.all()
     products = [i.product for i in wishlist_items]
@@ -223,33 +235,9 @@ def vendorupdate(request):
      vendor_update = VendorUpdateForm()
     return render(request, 'store/vendorupdate.html', {'vendor_update':vendor_update})
 
-
-"""
-API_KEY = os.environ['57697d9bf19f182471b769b2ec961ae5']
-API_SECRET = os.environ['9b214fd9567baccfc07f6a9cd1329344']
-mailjet = Client(auth=(API_KEY, API_SECRET), version='v3.1')
-def send_mail(request):
-    vendor = request.user
-    data = {
-  'Messages': [
-    {
-      "From": {
-        "Email": "mailfortrivialstuff@gmail.com",
-        "Name": "Moksh"
-      },
-      "To": [
-        {
-          "Email": "{vendor.email}",
-          "Name": "{vendor.name}"
-        }
-      ],
-      "Subject": "Update from DeTrace e-commerce!",
-      "TextPart": "Greetings {vendor.name}. An order has been placed for you listing.!",
-      "HTMLPart": ""
-    }
-  ]
-}
-    result = mailjet.send.create(data=data)
-    print(result.status_code)
-    print(result.json())
-"""
+@login_required
+def productdelete(request, id):
+    product = Product.objects.get(id=id)
+    product.delete()
+    messages.success(request, f"Listing for the item has been deleted")
+    return HttpResponseRedirect('/')

@@ -7,13 +7,13 @@
         {% if object.seller == user %}
           <div>
             <a class="btn btn-secondary btn-sm mt-1 mb-1" href="#">Update</a>
-            <a class="btn btn-danger btn-sm mt-1 mb-1" href="#">Delete</a>
+            <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url "productdelete" product.id%}">Delete</a>
           </div>
         {% endif %}
       </div>
       <h2 class="article-title">{{ object.title }}</h2>
       <p class="article-content">{{ object.price }}</p>
-      <img class="article-img" src="{{ product.image.url }}" alt="{{ product.title }}">
+      <img class="article-img" src="{{ product.image.url }}" alt="{{ product.title }} width="500" height='300'">
       <a class="nav-item nav-link" href="{% url 'add_to_cart' product.id%}">Add to cart</a>
       {% if img_obj %}  
         <h3>Succesfully uploaded : {{img_obj.caption}}</h3>  

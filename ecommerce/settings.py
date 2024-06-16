@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     'store.apps.StoreConfig',
     'users.apps.UsersConfig',
+    'import_export',
 ]
 
 MIDDLEWARE = [

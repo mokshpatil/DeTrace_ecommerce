@@ -13,7 +13,7 @@
             <h2><a class="article-title" href="{% url 'product_detail' product.product.id %}">{{ product.product.title }}</a></h2>
             <p class="article-content">price of 1 unit ${{ product.product.price }}</p>
             <p class="article-content">Quantity {{ product.quantity }}</p>
-            <img class="article-img" src="{{ product.product.image.url }}" alt="{{ product.product.title }}">
+            <img class="article-img" src="{{ product.product.image.url }}" alt="{{ product.product.title }} width="500" height='300'">
         </div>
         </article>
         {% endfor %}

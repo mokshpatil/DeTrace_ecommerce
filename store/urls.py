@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import ProductDetailView, ProductCreateView, ProductListView, add_to_cart, placeorder, vendorupdate
+from .views import ProductDetailView, ProductCreateView, ProductListView, add_to_cart, placeorder, vendorupdate, productdelete
 
 urlpatterns = [
     path('', ProductListView.as_view(), name='store'),
@@ -21,6 +21,8 @@ urlpatterns = [
     path('wishlist/', views.wishlist, name='wishlist'),
     path('clearwishlist/', views.clearwishlist, name='clearwishlist'),
     path('clearcart/', views.clearcart, name='clearcart'),
+   # path('testmail/', views.test_mail, name='testmail'),
+   path('productdelete/<int:id>', productdelete, name='productdelete'),
 ]
 
 if settings.DEBUG:

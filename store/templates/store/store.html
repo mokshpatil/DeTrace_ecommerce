@@ -8,16 +8,16 @@
 	<div class="media-body">
 		<div class="article-metadata">
 		<a class="mr-2" href="#">{{ product.seller }}</a>
-		<a class="mr-2" href="#">{{ product.id }}</a>
 		</div>
 		<h3><a class="article-title" href="{% url 'product_detail' product.id %}">{{ product.title }}</a></h3>
 		<p class="article-content">${{ product.price }}</p>
 		<p class="article-content">available quantity = {{ product.quantity }}</p>
-		<img class="article-img" src="{{ product.image.url }}" alt="{{ product.title }}">
+		<img class="article-img" src="{{ product.image.url }}" alt="{{ product.title }}" width="500" height='300'>
 		<p class="article-content">Description:
 		{{ product.description }}</p>
 		<a class="nav-item nav-link" href="{% url 'add_to_cart' product.id%}">Add to Cart</a>
 		<a class="nav-item nav-link" href="{% url "add_to_wishlist" product.id%}">Add to Wishlist</a>
+		<br>
 	</div>
 	</article>
 	{% endfor %}
