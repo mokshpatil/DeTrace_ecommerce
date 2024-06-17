@@ -54,8 +54,8 @@ class WishlistItems(models.Model):
 
 
 class Review(models.Model):
-    customer = models.OneToOneField(CustomUser, on_delete=models.SET_NULL, null=True)
-    product = models.OneToOneField(Product, on_delete=models.CASCADE)
+    customer = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     title = models.CharField(max_length=50, default='')
     description = models.CharField(max_length=250, default='')
     def __str__(self):

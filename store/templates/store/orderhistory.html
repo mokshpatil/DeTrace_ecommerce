@@ -2,20 +2,25 @@
 {% block content %}
     {% for order in orders %}
     <article class="media content-section">    
-    <h2><a class="article-title" href="#">order {{ forloop.counter }}</a></h2>
+    <h2><a class="article-title" href="#">order {{ forloop.counter }} :</a></h2>
     <br>
         {% for product in order.orderitems_set.all %}
         <article class="media content-section">
         <div class="media-body">
             <div class="article-metadata">
+            <br>
+            <br>
             <a class="mr-2" href="#">{{ product.product.seller }}</a>
             </div>
             <h2><a class="article-title" href="{% url 'product_detail' product.product.id %}">{{ product.product.title }}</a></h2>
             <p class="article-content">price of 1 unit ${{ product.product.price }}</p>
             <p class="article-content">Quantity {{ product.quantity }}</p>
             <img class="article-img" src="{{ product.product.image.url }}" alt="{{ product.product.title }} width="500" height='300'">
+            <a class="mr-2" href="{% url "review" product.product.id%}">Write a Review</a>
+            <br>
         </div>
         </article>
+        
         {% endfor %}
     </article>
     {% endfor %}

@@ -6,9 +6,10 @@ from django.views.generic import ListView, DetailView, CreateView
 from .models import Product, Cart, OrderItems, Order, WishlistItems, Wishlist, Review
 from users.models import CustomUser, Customer, Vendor
 import csv
-from .forms import VendorUpdateForm
+from .forms import VendorUpdateForm, ReviewForm
 from django.contrib import messages
 from mailjet_rest import Client
+from django.urls import reverse, reverse_lazy
 import os
 from dotenv import load_dotenv
 load_dotenv(override=True)
@@ -241,3 +242,16 @@ def productdelete(request, id):
     product.delete()
     messages.success(request, f"Listing for the item has been deleted")
     return HttpResponseRedirect('/')
+
+class review(CreateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = 'store/review.html'
+
+    def get_success_url(self) -> str:
+        return reverse_lazy('product_detail', kwargs={'pk': self.object.product.pk})
+
+    def form_valid(self, form):
+        form.instance.customer = self.request.user
+        form.instance.product_id = self.kwargs['pk']
+        return super().form_valid(form)

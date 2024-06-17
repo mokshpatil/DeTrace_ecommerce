@@ -1,0 +1,9 @@
+{% extends "store/main.html" %}
+{% block content %}
+<h2>Write a  Review </h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}
