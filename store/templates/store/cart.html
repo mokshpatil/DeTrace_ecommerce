@@ -7,23 +7,32 @@
 <h3><a class="article-title" href="{% url "clearcart" %}">Clear Cart</a></h3>
 <br>
 {% for product in cart_items %}
-        <article class="media content-section">
+    <article class="media content-section">
         <div class="media-body">
             <div class="article-metadata">
-            <a class="mr-2" href="#">{{ product.product.seller }}</a>
-            <a class="mr-2" href="#">{{ product.product.id }}</a>
+                <a class="mr-2" href="#">{{ product.product.seller }}</a>
+                <a class="mr-2" href="#">{{ product.product.id }}</a>
             </div>
             <h3><a class="article-title" href="{% url 'product_detail' product.product.id %}">{{ product.product.title }}</a></h3>
-            <p class="article-content">price of 1 unit ${{ product.product.price }}</p>
+            <p class="article-content">Price of 1 unit ${{ product.product.price }}</p>
             <p class="article-content">Discounted Price : ${{ product.product|get_discounted_price }}</p>
             <p class="article-content">Quantity {{ product.quantity }}</p>
-            <img class="article-img" src="{{ product.product.image.url }}" alt="{{ product.product.title }} width="500" height='300'">
+            <img class="article-img" src="{{ product.product.image.url }}" alt="{{ product.product.title }}" width="500" height="300">
         </div>
-        </article>
-    {% endfor %}
-    <h2><a class="article-title" href="">Total price = {{ cart.total_value }}</a></h2>
-    <form method="post" action="{% url 'orderplaced' %}">
-        {% csrf_token %}
-        <button type="submit">Place Order</button>
-    </form>
+    </article>
+{% endfor %}
+<h2><a class="article-title" href="#">Total price = ${{ total_value }}</a></h2>
+{% if discount %}
+    <p>Discount Applied: {{ discount }}%</p>
+{% endif %}
+<form method="post" action="{% url 'cart' %}">
+    {% csrf_token %}
+    <input type="text" name="coupon_code" placeholder="Enter coupon code" value="{{ applied_coupon }}">
+    <button type="submit">Apply Coupon</button>
+</form>
+<form method="post" action="{% url 'orderplaced' %}">
+    {% csrf_token %}
+    <input type="hidden" name="discount" value="{{ discount }}">
+    <button type="submit">Place Order</button>
+</form>
 {% endblock content %}

@@ -23,7 +23,11 @@ urlpatterns = [
     path('clearcart/', views.clearcart, name='clearcart'),
     path('productdelete/<int:id>', productdelete, name='productdelete'),
     path('productupdate/<int:pk>', views.ProductUpdateView.as_view(), name='productupdate'),
-    path('coupons/', views.DiscountListView.as_view(), name='coupons'),
+    path('couponmanager/', views.couponmanager, name='couponmanager'),
+    path('create_coupon/', views.create_coupon, name='create_coupon'),
+    path('edit/<int:coupon_id>/', views.edit_coupon, name='edit_coupon'),
+    path('delete/<int:coupon_id>/', views.delete_coupon, name='delete_coupon'),
+
 ]
 
 if settings.DEBUG:

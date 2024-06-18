@@ -1,16 +1,15 @@
 from django.forms import BaseModelForm
 from django.http import HttpResponse
-from django.shortcuts import render, redirect, HttpResponseRedirect
+from django.shortcuts import render, redirect, HttpResponseRedirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from .models import Product, Cart, OrderItems, Order, WishlistItems, Wishlist, Review, Coupon
 from users.models import CustomUser, Customer, Vendor
 import csv
-from .forms import VendorUpdateForm, ReviewForm
+from .forms import VendorUpdateForm, CouponForm
 from django.contrib import messages
 from mailjet_rest import Client
-from django.urls import reverse, reverse_lazy
 import os
 from dotenv import load_dotenv
 load_dotenv(override=True)
@@ -115,20 +114,45 @@ def add_to_wishlist(request, id):
 @login_required
 def cart(request):
     if request.user.is_vendor:
-        messages.error(request, f"Cart cannot be accessed from a vendor account")
+        messages.error(request, "Cart cannot be accessed from a vendor account")
         return redirect('store')
-    #customer = request.user
-    cart, created = Cart.objects.get_or_create(customer = request.user, is_paid=False)
+
+    cart, created = Cart.objects.get_or_create(customer=request.user, is_paid=False)
     cart_items = cart.orderitems_set.all()
     products = [i.product for i in cart_items]
+
+    coupon_code = request.POST.get('coupon_code')
+    discount = 0
+    coupon = None
+
+    if coupon_code:
+        try:
+            # Extract vendors from products
+            vendors = [product.seller for product in products]
+
+            # Attempt to get the coupon
+            coupon = Coupon.objects.get(
+                code=coupon_code,
+                is_active=True,  # Corrected field name
+                vendor__in=vendors
+            )
+            discount = coupon.discount
+        except Coupon.DoesNotExist:
+            messages.error(request, "Invalid coupon code")
+
+    total_value = cart.total_value() - (cart.total_value() * discount / 100)
 
     context = {
         'cart': cart,
         'cart_items': cart_items,
-        'products': products
+        'products': products,
+        'discount': discount,
+        'total_value': total_value,
+        'applied_coupon': coupon_code if coupon_code else ""
     }
 
     return render(request, 'store/cart.html', context)
+
 
 @login_required
 def wishlist(request):
@@ -162,40 +186,37 @@ def clearcart(request):
 @login_required
 def placeorder(request):
     if request.method == 'POST':
-       # customer = request.user
-        cart = Cart.objects.filter(is_paid=False, customer = request.user).first()
-        customer = CustomUser.objects.filter(username = request.user.username).first()
+        cart = Cart.objects.filter(is_paid=False, customer=request.user).first()
+        customer = CustomUser.objects.filter(username=request.user.username).first()
         cart_items = cart.orderitems_set.all()
-        quantityenough = True
-        profile = Customer.objects.filter(user = customer).first()
-        for products in cart_items:
-            if products.product.quantity < products.quantity:
-                quantityenough = False
-        
+        profile = Customer.objects.filter(user=customer).first()
+        quantity_enough = all(product.product.quantity >= product.quantity for product in cart_items)
 
-        if cart:
-            if quantityenough :
-                cart_total_value = cart.total_value()
-                if profile.wallet_balance > cart_total_value:
-                    cart.is_paid = True
-                    cart.save()
-                    profile.wallet_balance = profile.wallet_balance - cart_total_value
-                    profile.save()
-                    for products in cart_items:
-                        products.product.quantity -= products.quantity
-                        products.product.orders += products.quantity
-                        products.product.save()
+        if cart and quantity_enough:
+            discount = request.POST.get('discount', 0)
+            cart_total_value = cart.total_value() - (cart.total_value() * float(discount) / 100)
+            if profile.wallet_balance >= cart_total_value:
+                cart.is_paid = True
+                cart.save()
+                profile.wallet_balance -= cart_total_value
+                profile.save()
+                for item in cart_items:
+                    item.product.quantity -= item.quantity
+                    item.product.orders += item.quantity
+                    item.product.save()
 
-                    return render(request, 'store/orderplaced.html')
-                else:
-                    return HttpResponse("not enough money")
+                return render(request, 'store/orderplaced.html')
             else:
+                return HttpResponse("Not enough money")
+        else:
+            if not quantity_enough:
                 cart.delete()
                 return HttpResponse("Sorry, please order in available quantity")
-        else:
             return redirect('cart')
 
     return redirect('cart')
+
+
 
 @login_required
 def orderhistory(request):
@@ -208,6 +229,43 @@ def orderhistory(request):
 def sellerdashboard(request):
     products= Product.objects.filter(seller=request.user)
     return render(request, 'store/sellerdashboard.html', {'products': products})
+
+@login_required
+def couponmanager(request):
+    vendor = request.user
+    coupons = Coupon.objects.filter(vendor=vendor)
+    return render(request, 'store/couponmanager.html', {'coupons': coupons})
+
+@login_required
+def create_coupon(request):
+    if request.method == 'POST':
+        form = CouponForm(request.POST)
+        if form.is_valid():
+            coupon = form.save(commit=False)
+            coupon.vendor = get_object_or_404(Vendor, user=request.user)
+            coupon.save()
+            return redirect('couponmanager')
+    else:
+        form = CouponForm()
+    return render(request, 'store/create_coupon.html', {'form': form})
+
+@login_required
+def edit_coupon(request, coupon_id):
+    coupon = get_object_or_404(Coupon, id=coupon_id, vendor__user=request.user)
+    if request.method == 'POST':
+        form = CouponForm(request.POST, instance=coupon)
+        if form.is_valid():
+            form.save()
+            return redirect('couponmanager')
+    else:
+        form = CouponForm(instance=coupon)
+    return render(request, 'store/edit_coupon.html', {'form': form})
+
+@login_required
+def delete_coupon(request, coupon_id):
+    coupon = get_object_or_404(Coupon, id=coupon_id, vendor__user=request.user)
+    coupon.delete()
+    return redirect('couponmanager')
 
 @login_required
 def getreport(request):
@@ -240,20 +298,3 @@ def productdelete(request, id):
     messages.success(request, f"Listing for the item has been deleted")
     return HttpResponseRedirect('/')
 
-
-
-    
-class DiscountListView(ListView):
-    model = Coupon
-    template_name = 'store/coupons.html'
-    context_object_name = 'codes'
-    ordering = ['-id']
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated and not request.user.profile.is_seller:
-            return redirect('home')
-        return super().dispatch(request, *args, **kwargs)
-    
-    def get_queryset(self):
-        user = self.request.user
-        return Coupon.objects.filter(seller=user)
