@@ -21,9 +21,8 @@ urlpatterns = [
     path('wishlist/', views.wishlist, name='wishlist'),
     path('clearwishlist/', views.clearwishlist, name='clearwishlist'),
     path('clearcart/', views.clearcart, name='clearcart'),
-   # path('testmail/', views.test_mail, name='testmail'),
    path('productdelete/<int:id>', productdelete, name='productdelete'),
-   path('product/<int:pk>/review', views.review.as_view(), name = 'review'),
+   path('coupons/', views.DiscountListView.as_view(), name='coupons'),
 ]
 
 if settings.DEBUG:

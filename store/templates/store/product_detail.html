@@ -25,16 +25,18 @@
   <br>
   <h3>Reviews</h3>
   <br>
-  {% for review in object.review.all %}
-    <article class="media content-section">
-      <div class="media-body">
-        <div class="article-metadata">
-          <a class="mr-2" href="#">{{ review.customer }}</a>
-        </div>
-        <h2 class="article-title">{{ review.title }}</h2>
-        <p class="article-content">{{ review.description }}</p>
+  {% for review in reviews %}
+  <article class="media content-section">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href="#">{{ review.customer }}</a>
       </div>
-      <br>
-    </article>
-    {% endfor %}
+      <h2 class="article-title">{{ review.title }}</h2>
+      <p class="article-content">{{ review.description }}</p>
+    </div>
+    <br>
+  </article>
+{% empty %}
+  <p>No reviews yet.</p>
+{% endfor %}
 {% endblock content %}

@@ -78,9 +78,9 @@ class Vendor(models.Model):
 class Customer(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=200, null=True)
-    wallet_balance = models.IntegerField(default=0)
+    wallet_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_vendor = models.BooleanField(default=False)
-    add_money = models.IntegerField(default=0)
+    add_money = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     def __str__(self):
         return self.user.username
     

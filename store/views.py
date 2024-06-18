@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView
-from .models import Product, Cart, OrderItems, Order, WishlistItems, Wishlist, Review
+from .models import Product, Cart, OrderItems, Order, WishlistItems, Wishlist, Review, Coupon
 from users.models import CustomUser, Customer, Vendor
 import csv
 from .forms import VendorUpdateForm, ReviewForm
@@ -45,6 +45,13 @@ class ProductListView(ListView):
 
 class ProductDetailView(DetailView):
     model = Product
+    template_name = 'store/product_detail.html'
+    context_object_name = 'product'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['reviews'] = Review.objects.filter(product=self.object)
+        return context
 
 class ProductCreateView(CreateView):
     model = Product
@@ -243,15 +250,24 @@ def productdelete(request, id):
     messages.success(request, f"Listing for the item has been deleted")
     return HttpResponseRedirect('/')
 
-class review(CreateView):
-    model = Review
-    form_class = ReviewForm
-    template_name = 'store/review.html'
 
-    def get_success_url(self) -> str:
-        return reverse_lazy('product_detail', kwargs={'pk': self.object.product.pk})
+@login_required
+def productupdate(request, id):
+    product = Product.objects.get(id=id)
+    if request.method == "POST":
+        customer_update = CustomerUpdateForm(request.POST, instance=customer)
+    
+class DiscountListView(ListView):
+    model = Coupon
+    template_name = 'store/coupons.html'
+    context_object_name = 'codes'
+    ordering = ['-id']
 
-    def form_valid(self, form):
-        form.instance.customer = self.request.user
-        form.instance.product_id = self.kwargs['pk']
-        return super().form_valid(form)
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and not request.user.profile.is_seller:
+            return redirect('home')
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_queryset(self):
+        user = self.request.user
+        return Coupon.objects.filter(seller=user)

@@ -10,10 +10,11 @@ class Product(models.Model):
     title = models.CharField(max_length=100, null=True)
     image = models.ImageField(upload_to='prod_pics')
     description = models.TextField(max_length=400, default="")
-    price = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     seller = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
     quantity = models.IntegerField(default=0)
     orders = models.IntegerField(default=0)
+    discount = models.DecimalField(max_digits=2, decimal_places=2, default=0)
     def __str__(self):
         return self.title
     
@@ -59,6 +60,9 @@ class Review(models.Model):
     title = models.CharField(max_length=50, default='')
     description = models.CharField(max_length=250, default='')
     def __str__(self):
-        return '%s - %s' %(self.product.title, self.customer)
+        return self.title
 
+class Coupon(models.Model):
+    seller = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    discount = models.DecimalField(max_digits=2, decimal_places=2, default=0)
 
