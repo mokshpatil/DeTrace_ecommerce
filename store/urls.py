@@ -21,8 +21,9 @@ urlpatterns = [
     path('wishlist/', views.wishlist, name='wishlist'),
     path('clearwishlist/', views.clearwishlist, name='clearwishlist'),
     path('clearcart/', views.clearcart, name='clearcart'),
-   path('productdelete/<int:id>', productdelete, name='productdelete'),
-   path('coupons/', views.DiscountListView.as_view(), name='coupons'),
+    path('productdelete/<int:id>', productdelete, name='productdelete'),
+    path('productupdate/<int:pk>', views.ProductUpdateView.as_view(), name='productupdate'),
+    path('coupons/', views.DiscountListView.as_view(), name='coupons'),
 ]
 
 if settings.DEBUG:

@@ -1,18 +1,21 @@
 {% extends "store/main.html" %}
+{% load product_filters %}
 {% block content %}
   <article class="media content-section">
     <div class="media-body">
       <div class="article-metadata">
-        <a class="mr-2" href="#">{{ object.seller }}</a>
-        {% if object.seller == user %}
+        <a class="mr-2" href="#">{{ product.seller }}</a>
+        {% if product.seller == user %}
           <div>
-            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="#">Update</a>
+            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url "productupdate" product.id%}">Update</a>
             <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url "productdelete" product.id%}">Delete</a>
           </div>
         {% endif %}
       </div>
-      <h2 class="article-title">{{ object.title }}</h2>
-      <p class="article-content">{{ object.price }}</p>
+      <h2 class="article-title">{{ product.title }}</h2>
+      <br>
+      <p class="article-content">Original Price : ${{ product.price }}</p>
+		  <p class="article-content">Discounted Price : ${{ product|get_discounted_price }}</p>
       <img class="article-img" src="{{ product.image.url }}" alt="{{ product.title }} width="500" height='300'">
       <a class="nav-item nav-link" href="{% url 'add_to_cart' product.id%}">Add to cart</a>
       {% if img_obj %}  

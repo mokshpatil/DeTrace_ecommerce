@@ -2,7 +2,8 @@ from django.forms import BaseModelForm
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from .models import Product, Cart, OrderItems, Order, WishlistItems, Wishlist, Review, Coupon
 from users.models import CustomUser, Customer, Vendor
 import csv
@@ -55,8 +56,21 @@ class ProductDetailView(DetailView):
 
 class ProductCreateView(CreateView):
     model = Product
-    fields = ['title', 'image', 'description', 'price', 'quantity']
+    fields = ['title', 'image', 'description', 'price', 'quantity', 'discount']
     
+
+    def form_valid(self, form):
+        form.instance.seller = self.request.user
+        return super().form_valid(form)
+    
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
+    model = Product
+    fields =['title', 'image', 'description', 'price', 'quantity', 'discount']
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and not request.user.is_vendor:
+            sellerdashboard(request)
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.instance.seller = self.request.user
@@ -161,37 +175,13 @@ def placeorder(request):
 
         if cart:
             if quantityenough :
-        
-                if profile.wallet_balance > cart.total_value():
+                cart_total_value = cart.total_value()
+                if profile.wallet_balance > cart_total_value:
                     cart.is_paid = True
                     cart.save()
-                    profile.wallet_balance = profile.wallet_balance - cart.total_value()
+                    profile.wallet_balance = profile.wallet_balance - cart_total_value
                     profile.save()
-                    cart_sellers = []
                     for products in cart_items:
-                        if not (products.product.seller in cart_sellers):
-                            cart_sellers.append(products.product.seller)
-                            data = {'Messages': [
-                            {
-                            "From": {
-                                "Email": "mailfortrivialstuff@gmail.com",
-                                "Name": "Moksh"
-                            },
-                            "To": [
-                                {
-                                "Email": "{products.product.seller.email}",
-                                "Name": "{products.product.seller.username}"
-                                }
-                            ],
-                            "Subject": "Update from DeTrace e-commerce!",
-                            "TextPart": "Greetings {products.product.seller.username}. An order has been placed for {products.product} of {products.product.quantity} units.!",
-                            "HTMLPart": ""
-                            }
-                        ]
-                        }
-                            result = mailjet.send.create(data=data)
-                            print(result.status_code)
-                            print(result.json())
                         products.product.quantity -= products.quantity
                         products.product.orders += products.quantity
                         products.product.save()
@@ -251,11 +241,7 @@ def productdelete(request, id):
     return HttpResponseRedirect('/')
 
 
-@login_required
-def productupdate(request, id):
-    product = Product.objects.get(id=id)
-    if request.method == "POST":
-        customer_update = CustomerUpdateForm(request.POST, instance=customer)
+
     
 class DiscountListView(ListView):
     model = Coupon

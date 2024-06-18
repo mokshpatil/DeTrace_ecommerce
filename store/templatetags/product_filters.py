@@ -3,5 +3,5 @@ from django import template
 register = template.Library()
 
 @register.filter
-def discounted_price(Product):
-    return Product.get_discounted_price()
+def get_discounted_price(product):
+    return product.get_discounted_price()

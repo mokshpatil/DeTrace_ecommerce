@@ -1,5 +1,6 @@
 {% extends 'store/main.html' %}
 {% load static %}
+{% load product_filters %}
 {% block content %}
 <h2>HOME</h2>
 <br>
@@ -7,10 +8,11 @@
 	<article class="media content-section">
 	<div class="media-body">
 		<div class="article-metadata">
-		<a class="mr-2" href="#">{{ product.seller }}</a>
+		<a class="mr-2" href="#">Seller : {{ product.seller }}</a>
 		</div>
 		<h3><a class="article-title" href="{% url 'product_detail' product.id %}">{{ product.title }}</a></h3>
-		<p class="article-content">${{ product.price }}</p>
+		<p class="article-content">Original Price : $<s>{{ product.price }}</s></p>
+		<p class="article-content">Discounted Price : ${{ product|get_discounted_price }}</p>
 		<p class="article-content">available quantity = {{ product.quantity }}</p>
 		<img class="article-img" src="{{ product.image.url }}" alt="{{ product.title }}" width="500" height='300'>
 		<p class="article-content">Description:

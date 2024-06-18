@@ -1,5 +1,5 @@
 from django import forms
-from .models import Vendor, CustomUser, Review, Product
+from .models import Vendor, CustomUser, Review, Coupon
 
 class VendorUpdateForm(forms.ModelForm):
 
@@ -12,7 +12,7 @@ class ReviewForm(forms.ModelForm):
         model = Review
         fields = ['title', 'description']
 
-class ProductUpdateForm(forms.ModelForm):
+class CouponForm(forms.ModelForm):
     class Meta:
-        model = Product
-        fields = ['title', 'image', 'description', 'price', 'quantity', ]
+        model = Coupon
+        fields = ['code', 'discount', 'is_active']
