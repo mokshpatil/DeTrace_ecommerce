@@ -2,26 +2,23 @@
 {% load static %}
 {% load product_filters %}
 {% block content %}
-<h2>HOME</h2>
-<br>
-	{% for product in products %}
-	<article class="media content-section">
-	<div class="media-body">
-		<div class="article-metadata">
-		<a class="mr-2" href="#">Seller : {{ product.seller }}</a>
-		</div>
-		<h3><a class="article-title" href="{% url 'product_detail' product.id %}">{{ product.title }}</a></h3>
-		<p class="article-content">Original Price : $<s>{{ product.price }}</s></p>
-		<p class="article-content">Discounted Price : ${{ product|get_discounted_price }}</p>
-		<p class="article-content">available quantity = {{ product.quantity }}</p>
-		<img class="article-img" src="{{ product.image.url }}" alt="{{ product.title }}" width="500" height='300'>
-		<p class="article-content">Description:
-		{{ product.description }}</p>
-		<a class="nav-item nav-link" href="{% url 'add_to_cart' product.id%}">Add to Cart</a>
-		<a class="nav-item nav-link" href="{% url "add_to_wishlist" product.id%}">Add to Wishlist</a>
-		<br>
-	</div>
-	</article>
-	{% endfor %}
-	
+<h2 class="mb-4">HOME</h2>
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.title }}</h5>
+                <p class="card-text">Original Price: <s>${{ product.price }}</s></p>
+                <p class="card-text">Discounted Price: ${{ product|get_discounted_price }}</p>
+                <p class="card-text">Available Quantity: {{ product.quantity }}</p>
+                <a href="{% url 'product_detail' product.id %}" class="btn btn-primary btn-sm">View Details</a>
+                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success btn-sm">Add to Cart</a>
+                <a href="{% url "add_to_wishlist" product.id %}" class="btn btn-info btn-sm">Add to Wishlist</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock content %}

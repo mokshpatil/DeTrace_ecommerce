@@ -1,23 +1,18 @@
 {% extends 'store/main.html' %}
 {% block content %}
-    <div class="content-section">
-        <h2 class="heading">{{ user.username }}</h2>
-        <p class="email-text">e-mail : {{ user.email }}</p>
-        <p class="wallet-text">current wallet balance : {{ customer.wallet_balance }}</p>
-        <br>
-        <br>
-        
-        <form method="POST">
-            {% csrf_token %}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Add Money</legend>
-                {{ customer_update.as_p }}
-            </fieldset>
-            <div class="form-groups">
-                <button class="btn btn-outline-info" type="submit">Update</button>
-            </div>
-        </form>
-
-    </div>
-    
+<div class="content-section">
+    <h2 class="mb-4">{{ user.username }}</h2>
+    <p class="text-muted">e-mail: {{ user.email }}</p>
+    <p class="text-muted">Current wallet balance: ${{ customer.wallet_balance }}</p>
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Add Money</legend>
+            {{ customer_update.as_p }}
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">Update</button>
+        </div>
+    </form>
+</div>
 {% endblock content %}

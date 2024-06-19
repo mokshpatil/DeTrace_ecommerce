@@ -1,31 +1,30 @@
 {% extends "store/main.html" %}
 {% block content %}
-    <a class="nav-link" href="{% url "vendorupdate" %}">Update E-mail</a>
-    <br>
-    <a class="nav-link" href="{% url "getreport" %}">Download Report</a>
-    <br>
-    <a class="nav-link" href="{% url "couponmanager" %}">Coupon Manager</a>
-    <br>
-    <br>
+<h2 class="mb-4">Seller Dashboard</h2>
+<div class="list-group mb-4">
+    <a href="{% url 'vendorupdate' %}" class="list-group-item list-group-item-action">Update E-mail</a>
+    <a href="{% url 'getreport' %}" class="list-group-item list-group-item-action">Download Report</a>
+    <a href="{% url 'couponmanager' %}" class="list-group-item list-group-item-action">Coupon Manager</a>
+</div>
+<div class="row">
     {% for product in products %}
-        <article class="media content-section">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="#">{{ product.seller }}</a>
+    <div class="col-md-6">
+        <div class="card mb-4 shadow-sm">
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.title }}</h5>
+                <p class="card-text">Price: ${{ product.price }}</p>
+                <p class="card-text">In stock: {{ product.quantity }}</p>
+                <p class="card-text">Orders: {{ product.orders }}</p>
+                <p class="card-text">Description: {{ product.description }}</p>
+                <div class="btn-group">
+                    <a href="{% url 'product_detail' product.id %}" class="btn btn-primary btn-sm">View Details</a>
+                    <a href="{% url 'productupdate' product.id %}" class="btn btn-secondary btn-sm">Update</a>
+                    <a href="{% url 'productdelete' product.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </div>
             </div>
-            <h2><a class="article-title" href="{% url 'product_detail' product.id %}">{{ product.title }}</a></h2>
-            <div>
-              <a class="btn btn-secondary btn-sm mt-1 mb-1" href="#">Update</a>
-              <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url "productdelete" product.id%}">Delete</a>
-            </div>
-            <p class="article-content">${{ product.price }}</p>
-            <p class="article-content">in stock = {{ product.quantity }}</p>
-            <p class="article-content">orders = {{ product.orders }}</p>
-            <img class="article-img" src="{{ product.image.url }}" alt="{{ product.title }} width="500" height='300'">
-            <p class="article-content">Description:
-               {{ product.description }}</p>
-          </div>
-        </article>
+        </div>
+    </div>
     {% endfor %}
-   
+</div>
 {% endblock content %}

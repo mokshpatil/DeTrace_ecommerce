@@ -1,23 +1,22 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-<h2>WISHLIST</h2>
-<br>
-<h3><a class="article-title" href="{% url "clearwishlist" %}">Clear Wishlist</a></h3>
-<br>
-{% for product in wishlist_items %}
-        <article class="media content-section">
-        <div class="media-body">
-            <div class="article-metadata">
-            <a class="mr-2" href="#">{{ product.product.seller }}</a>
-            <a class="mr-2" href="#">{{ product.product.id }}</a>
+<h2 class="mb-4">WISHLIST</h2>
+<div class="mb-4">
+    <a class="btn btn-danger" href="{% url "clearwishlist" %}">Clear Wishlist</a>
+</div>
+<div class="row">
+    {% for product in wishlist_items %}
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <img src="{{ product.product.image.url }}" class="card-img-top" alt="{{ product.product.title }}" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.product.title }}</h5>
+                <p class="card-text">Price: ${{ product.product.price }}</p>
+                <a href="{% url 'add_to_cart' product.id%}" class="btn btn-success btn-sm">Add to Cart</a>
             </div>
-            <h4><a class="article-title" href="{% url 'product_detail' product.product.id %}">{{ product.product.title }}</a></h4>
-            <p class="article-content">price = ${{ product.product.price }}</p>
-            <img class="article-img" src="{{ product.product.image.url }}" alt="{{ product.product.title }} width="500" height="300"">
-            <a class="nav-item nav-link" href="{% url 'add_to_cart' product.id%}">Add to Cart</a>
         </div>
-        </article>
+    </div>
     {% endfor %}
-    
+</div>
 {% endblock content %}
