@@ -14,7 +14,7 @@
             </div>
             <h4><a class="article-title" href="{% url 'product_detail' product.product.id %}">{{ product.product.title }}</a></h4>
             <p class="article-content">price = ${{ product.product.price }}</p>
-            <img class="article-img" src="{{ product.product.image.url }}" alt="{{ product.product.title }}">
+            <img class="article-img" src="{{ product.product.image.url }}" alt="{{ product.product.title }} width="500" height="300"">
             <a class="nav-item nav-link" href="{% url 'add_to_cart' product.id%}">Add to Cart</a>
         </div>
         </article>

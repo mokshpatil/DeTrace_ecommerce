@@ -128,7 +128,7 @@ def cart(request):
     if coupon_code:
         try:
             # Extract vendors from products
-            vendors = [product.seller for product in products]
+            vendors = [Vendor.objects.get(user=product.seller) for product in products]     
 
             # Attempt to get the coupon
             coupon = Coupon.objects.get(
@@ -232,8 +232,8 @@ def sellerdashboard(request):
 
 @login_required
 def couponmanager(request):
-    vendor = request.user
-    coupons = Coupon.objects.filter(vendor=vendor)
+    #vendor = request.user
+    coupons = Coupon.objects.filter(vendor=Vendor.objects.filter(user=request.user).first())
     return render(request, 'store/couponmanager.html', {'coupons': coupons})
 
 @login_required

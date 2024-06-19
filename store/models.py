@@ -77,7 +77,7 @@ class Review(models.Model):
 
 class Coupon(models.Model):
     code = models.CharField(max_length=50, unique=True, null=True)
-    vendor = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     discount = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     is_active = models.BooleanField(default=True)
 
