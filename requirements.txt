@@ -2,6 +2,7 @@ asgiref==3.8.1
 certifi==2024.6.2
 charset-normalizer==3.3.2
 diff-match-patch==20230430
+dj-database-url==2.2.0
 Django==5.0.6
 django-crispy-forms==2.1
 django-import-export==4.0.8
@@ -17,4 +18,5 @@ python-dotenv==1.0.1
 requests==2.32.3
 sqlparse==0.5.0
 tablib==3.5.0
+typing_extensions==4.12.2
 urllib3==2.2.1
