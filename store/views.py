@@ -12,6 +12,7 @@ from django.contrib import messages
 from mailjet_rest import Client
 import os
 from dotenv import load_dotenv
+import decimal
 load_dotenv(override=True)
 
 
@@ -194,7 +195,9 @@ def placeorder(request):
 
         if cart and quantity_enough:
             discount = request.POST.get('discount', 0)
-            cart_total_value = cart.total_value() - (cart.total_value() * float(discount) / 100)
+            discount_decimal = decimal.Decimal(discount) / decimal.Decimal(100)
+            cart_total_value = cart.total_value() * (decimal.Decimal(1) - discount_decimal)
+            
             if profile.wallet_balance >= cart_total_value:
                 cart.is_paid = True
                 cart.save()

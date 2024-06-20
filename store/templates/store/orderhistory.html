@@ -1,27 +1,31 @@
-{% extends "store/main.html" %}
+{% extends 'store/main.html' %}
+{% load static %}
 {% block content %}
+<h2 class="mb-4">Order History</h2>
+<div class="row">
     {% for order in orders %}
-    <article class="media content-section">    
-    <h2><a class="article-title" href="#">order {{ forloop.counter }} :</a></h2>
-    <br>
-        {% for product in order.orderitems_set.all %}
-        <article class="media content-section">
-        <div class="media-body">
-            <div class="article-metadata">
-            <br>
-            <br>
-            <a class="mr-2" href="#">{{ product.product.seller }}</a>
+    <div class="col-md-12">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Order {{ forloop.counter }}:</h5>
+                {% for product in order.orderitems_set.all %}
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <img src="{{ product.product.image.url }}" class="img-fluid" alt="{{ product.product.title }}" style="height: 200px; object-fit: cover;">
+                    </div>
+                    <div class="col-md-8">
+                        <h5 class="card-title">{{ product.product.title }}</h5>
+                        <p class="card-text">Sold by: {{ product.product.seller }}</p>
+                        <p class="card-text">Price of 1 unit: ${{ product.product.price }}</p>
+                        <p class="card-text">Quantity: {{ product.quantity }}</p>
+                        <a href="{% url 'product_detail' product.product.id %}" class="btn btn-primary btn-sm">View Details</a>
+                        <a href="#" class="btn btn-info btn-sm">Write a Review</a>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-            <h2><a class="article-title" href="{% url 'product_detail' product.product.id %}">{{ product.product.title }}</a></h2>
-            <p class="article-content">price of 1 unit ${{ product.product.price }}</p>
-            <p class="article-content">Quantity {{ product.quantity }}</p>
-            <img class="article-img" src="{{ product.product.image.url }}" alt="{{ product.product.title }} width="500" height='300'">
-            <a class="mr-2" href="{% url "review" product.product.id%}">Write a Review</a>
-            <br>
         </div>
-        </article>
-        
-        {% endfor %}
-    </article>
+    </div>
     {% endfor %}
+</div>
 {% endblock content %}
