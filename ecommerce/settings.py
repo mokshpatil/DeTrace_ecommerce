@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-*=0-iy9neu=-^*w##veat4nd-j4mtq%gzu-esq!b(87j#d-2zw
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
-DEBUG = bool(os.environ.get("DEBUG", default=0))
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 #adding custom user
@@ -97,14 +97,21 @@ DATABASES = {
 DATABASES= {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME' : 'ecommerce',
-        'USER' : 'postgres',
-        'PASSWORD' : 'passpostgres',
-        'HOST': 'localhost',
-        'PORT' :'5432',
+        'NAME': os.environ.get('POSTGRES_DB'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT'),
     }
 }
 
+"""
+'NAME': os.environ.get('POSTGRES_DB'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT'),
+"""
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
